@@ -1,4 +1,4 @@
-package com.springtutorial.restfulwebservice;
+package com.springtutorial.restfulwebservice.helloworld;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
