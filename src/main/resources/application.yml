@@ -11,6 +11,10 @@ logging:
 spring:
   messages:
     basename: messages
+  security:
+    user:
+      name: jihun
+      password: passwOrd
 management:
   endpoints:
     web:
