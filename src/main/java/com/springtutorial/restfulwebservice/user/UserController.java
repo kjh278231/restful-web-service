@@ -3,6 +3,8 @@ package com.springtutorial.restfulwebservice.user;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +14,12 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 public class UserController {
-    private UserDaoService service;
+    private final UserDaoService service;
 
     public UserController(UserDaoService service) {
         this.service = service;
@@ -26,7 +31,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public User retrieveOneUser(@PathVariable int id) {
+    public EntityModel<User> retrieveOneUser(@PathVariable int id) {
         //주소명 다 string 으로 받아오지만 int 형으로 적어놓으면 알아서 int 로 형 변환 가능
         User user = service.findOne(id);
         if (user == null) {
@@ -39,7 +44,11 @@ public class UserController {
 //        MappingJacksonValue mapping = new MappingJacksonValue(user);
 //        mapping.setFilters(filters);
 //        return mapping;
-        return user;
+        // HATEOAS
+        EntityModel<User> entityModel = EntityModel.of(user);
+        WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        entityModel.add(linkTo.withRel("all-users"));
+        return entityModel;
     }
 
     @PostMapping("/users")
